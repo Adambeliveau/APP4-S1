@@ -17,17 +17,17 @@ struct RGB imageRGB2[MAX_HAUTEUR][MAX_LARGEUR];
 int main()
 {
     int lignes1, colonnes1;
-    int lignes2, colonnes2;
+   // int lignes2, colonnes2;
     int maxval;
-    int histogramme[MAX_VALEUR+1];
-    char nom[MAX_CHAINE];
+   // int histogramme[MAX_VALEUR+1];
+   // char nom[MAX_CHAINE];
     struct MetaData metadonnees;
 
-	int retour;
+	//int retour;
 
     printf("-> Debut!\n");
 
-	// exemple d'appel de fonction
+	/* exemple d'appel de fonction
     retour = pgm_lire(nom, image1, 
                       &lignes1, &colonnes1, 
                       &maxval, &metadonnees);
@@ -44,8 +44,19 @@ int main()
     pgm_ecrire(nom, image1, 
                lignes1, colonnes1, 
                maxval, metadonnees);
-
-    printf("-> Fin!\n");
+    */
+    
+    
+	pgm_lire("TEST.txt", image1, &lignes1, &colonnes1, &maxval, &metadonnees);
+	printf("%d\t%d\t%d\t%s\t%s\t%s\n", lignes1, colonnes1,maxval,metadonnees.auteur, metadonnees.dateCreation, metadonnees.lieuCreation);
+	printf("-> Fin!\n");
+	/*for (int i = 0; i < MAX_HAUTEUR; i++)
+	{
+		for(int j = 0; j<MAX_LARGEUR;j++)
+		{
+			printf("%d",image1[i][j]);
+		}
+	}*/
 
     return 0;
 }
