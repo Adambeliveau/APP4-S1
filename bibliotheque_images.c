@@ -244,19 +244,28 @@ int pgm_extraire(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonne
 	{
 		verif=ERREUR;
 	}
+	
 	else{
+		int matriceExt[nbLignes][nbColonnes];
 		*p_lignes=nbLignes;
 		*p_colonnes=nbColonnes;
-		//extraction et copie de la matrice
+		//extraction de la matrice
 		for(int i=lignes1;i<=lignes2;i++)
 		{
 			for(int j=colonnes1;j<=colonnes2;j++)
 			{
-				matrice[i][j]=matrice[iLigne][jColonne];
+				matriceExt[iLigne][jColonne]=matrice[i][j];
 				jColonne++;	
 			}
 			jColonne=0;
 			iLigne++;
+		}
+		//superposition de la matrice extraite au coin superieur gauche
+		for(int i=0;i<nbLignes;i++)
+		{
+			for(int j=0;j<nbColonnes;j++){
+				matrice[i][j]=matriceExt[i][j];
+			}
 		}
 	}
 	return verif;
