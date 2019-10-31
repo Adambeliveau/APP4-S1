@@ -103,7 +103,7 @@ int main()
 	}
 	
 	Retour_Fonction = pgm_ecrire("allolemonde.txt", image1, lignes1, colonnes1, maxval, metadonnees);
-	if(Retour_Fonction == 1)
+	if(Retour_Fonction == -1)
 	{
 		printf("Erreur\n");
 	}
@@ -132,7 +132,7 @@ int main()
 	}
 	
 	Retour_Fonction = ppm_ecrire("allolemondeRGB.txt", imageRGB1, lignes2, colonnes2, maxval, metadonnees);
-	if(Retour_Fonction == 1)
+	if(Retour_Fonction == -1)
 	{
 		printf("Erreur\n");
 	}
@@ -141,7 +141,27 @@ int main()
 		printf("GOOD\n");
 	}
 	
-	/*printf("\n-> Fin!\n");
+	Retour_Fonction = pgm_pivoter90(image1, &lignes1, &colonnes1, SENS_ANTIHORAIRE);
+	if(Retour_Fonction == -1)
+	{
+		printf("Erreur\n");
+	}
+	else
+	{
+		printf("GOOD\n");
+	}
+	
+	Retour_Fonction = ppm_pivoter90(imageRGB1, &lignes2, &colonnes2, SENS_ANTIHORAIRE);
+	if(Retour_Fonction == -1)
+	{
+		printf("Erreur\n");
+	}
+	else
+	{
+		printf("GOOD\n");
+	}
+	
+	printf("\n-> Fin!\n");
 	for (int i = 0; i < lignes1; i++)
 	{
 		for(int j = 0; j < colonnes1;j++)
@@ -151,7 +171,7 @@ int main()
 			printf("%d\t",imageRGB1[i][j].valeurB);
 		}
 		printf("\n");
-	}*/
+	}
 
     return 0;
 }
