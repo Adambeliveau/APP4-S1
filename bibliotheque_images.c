@@ -32,7 +32,7 @@ int pgm_lire(char nom_fichier[], int matrice[MAX_HAUTEUR][MAX_LARGEUR], int *p_l
 	
 	fgets(Premiere_ligne, MAX_CHAINE, fPointer);
 	fgets(Deuxieme_ligne, MAX_CHAINE, fPointer);
-	
+		
 	longueur = strlen(Premiere_ligne);
 	if((Deuxieme_ligne[0] == 'P' && Deuxieme_ligne[1] != '2') ||(Premiere_ligne[0] == 'P' && Premiere_ligne[1] != '2') || (Premiere_ligne[0] != 'P' && Deuxieme_ligne[0] != 'P') || (Premiere_ligne[0] == 'P' && Deuxieme_ligne[0] == 'P'))
 	{
@@ -41,7 +41,7 @@ int pgm_lire(char nom_fichier[], int matrice[MAX_HAUTEUR][MAX_LARGEUR], int *p_l
 	
 	if(Premiere_ligne[0] == '#' || (Premiere_ligne[0] == 'P' && Premiere_ligne[1] == '2'))
 	{
-		p_metadonnees->auteur[i] = '\0';
+		p_metadonnees->auteur[i] = '\0';	
 		p_metadonnees->lieuCreation[i] = '\0';
 		p_metadonnees->dateCreation[i] = '\0';
 		if (Premiere_ligne[0] == '#')
@@ -152,6 +152,148 @@ int pgm_ecrire(char nom_fichier[], int matrice[MAX_HAUTEUR][MAX_LARGEUR], int li
     return OK;
 }
 
+int pgm_copier(int matrice1[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonnes1, int matrice2[MAX_HAUTEUR][MAX_LARGEUR], int *p_lignes2, int *p_colonnes2)
+{
+	//copie des informations
+	*p_lignes2=lignes1;
+	*p_colonnes2=colonnes1;
+	
+	//copie de la matrice
+	for (int i = 0; i < lignes1; i++)
+	{
+		for (int j = 0; j < colonnes1; j++)
+		{
+			matrice2[i][j]=matrice1[i][j];
+		}
+	}
+	//Verification 
+	if (pgm_sont_identiques(matrice1,lignes1,colonnes1,matrice2,*p_lignes2,*p_colonnes2)==OK)
+		return OK;
+	else
+		return ERREUR;
+}
+int pgm_creer_histogramme(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes, int colonnes, int histogramme[MAX_VALEUR+1])
+{
+	int valeur;
+	//Initialise toutes les valeurs de l'histogramme a 0
+	for(int i=0;i<MAX_VALEUR+1;i++)
+		histogramme[i]=0;
+	
+	//check combien de fois la couleur est utilisee
+	for (int i = 0; i < lignes; i++)
+	{
+		for (int j= 0; j < colonnes; j++)
+		{
+			valeur=matrice[i][j];
+			histogramme[valeur]++;	
+		}
+	}
+	return OK;
+}
+int pgm_couleur_preponderante(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes, int colonnes)
+{
+	int couleur;
+	int valeur=0;
+	int choixCouleurs[MAX_VALEUR+1];
+	pgm_creer_histogramme(matrice,lignes,colonnes,choixCouleurs);
+	
+	
+	couleur=choixCouleurs[0];
+	for (int i = 1; i <=MAX_VALEUR; i++)
+	{
+		if(valeur<=choixCouleurs[i]){
+			couleur=i;
+			valeur=choixCouleurs[i];
+		}
+	}
+	return couleur;
+}
+int pgm_creer_negatif(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes, int colonnes, int maxval)
+{
+	int valeurPixel;
+	
+	for(int i=0;i<lignes;i++)
+	{
+		for(int j=0;j<colonnes;j++)
+		{
+			valeurPixel=matrice[i][j];
+			
+			if(valeurPixel>maxval)
+				return ERREUR;
+			else
+			{
+				valeurPixel=maxval-valeurPixel;
+				matrice[i][j]=valeurPixel;				
+			}
+		}
+	}
+	return OK;
+}
+int pgm_extraire(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonnes1, int lignes2, int colonnes2, int *p_lignes, int *p_colonnes)
+{
+	int verif=0;
+	int nbLignes=(lignes2-lignes1)+1;
+	int nbColonnes=(colonnes2-colonnes1)+1;
+	int iLigne=0;
+	int jColonne=0;
+	
+	*p_lignes=nbLignes;
+	*p_colonnes=nbColonnes;
+	
+	if(nbLignes<0||nbColonnes<0||lignes1<1||lignes2<1||colonnes1<1||colonnes2<1||lignes2>*p_lignes||lignes1>*p_lignes||colonnes1>*p_colonnes||colonnes2>*p_colonnes)
+	{
+		verif=ERREUR;
+	}
+	else{
+		*p_lignes=nbLignes;
+		*p_colonnes=nbColonnes;
+		//extraction et copie de la matrice
+		for(int i=lignes1;i<=lignes2;i++)
+		{
+			for(int j=colonnes1;j<=colonnes2;j++)
+			{
+				matrice[i][j]=matrice[iLigne][jColonne];
+				jColonne++;	
+			}
+			jColonne=0;
+			iLigne++;
+		}
+	}
+	return verif;
+}
+int pgm_sont_identiques(int matrice1[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonnes1, int matrice2[MAX_HAUTEUR][MAX_LARGEUR], int lignes2, int colonnes2)
+{
+	int verif=OK;
+	//int val1,val2;
+	if(lignes1!=lignes2||colonnes1!=colonnes2||lignes1>MAX_HAUTEUR||lignes2>MAX_HAUTEUR||colonnes1>MAX_LARGEUR||colonnes2>MAX_LARGEUR)
+		verif=ERREUR;
+	else
+	{
+		for(int i=0;i<lignes1;i++){
+			if(verif==OK){
+				for(int j=0;j<colonnes1;j++){
+					//val1=matrice1[i][j];
+					//val2=matrice2[i][j];
+					if(matrice1[i][j]!=matrice2[i][j]){
+						verif=1;
+						break;
+					}
+				}
+			}
+		}
+		
+	
+	}
+	return verif;
+}
+int pgm_eclaircir_noircir(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int lignes, int colonnes, int maxval, int valeur)
+{
+	return 0;
+}
+int pgm_pivoter90(int matrice[MAX_HAUTEUR][MAX_LARGEUR], int *p_lignes, int *p_colonnes, int sens)
+{
+	return 0;
+}
 int ppm_lire(char nom_fichier[], struct RGB matrice[MAX_HAUTEUR][MAX_LARGEUR], int *p_lignes, int *p_colonnes, int *p_maxval, struct MetaData *p_metadonnees)
 {
 	FILE * fPointer;
@@ -298,5 +440,55 @@ int ppm_ecrire(char nom_fichier[], struct RGB matrice[MAX_HAUTEUR][MAX_LARGEUR],
 	
     return OK;
 }
+
+int ppm_sont_identiques(struct RGB matrice1[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonnes1, struct RGB matrice2[MAX_HAUTEUR][MAX_LARGEUR], int lignes2, int colonnes2)
+{
+	int verif=OK;
+	//int val1,val2;
+	if(lignes1!=lignes2||colonnes1!=colonnes2||lignes1>MAX_HAUTEUR||lignes2>MAX_HAUTEUR||colonnes1>MAX_LARGEUR||colonnes2>MAX_LARGEUR)
+		verif=ERREUR;
+	else
+	{
+		for(int i=0;i<lignes1;i++){
+			if(verif==OK){
+				for(int j=0;j<colonnes1;j++){
+					//val1=matrice1[i][j];
+					//val2=matrice2[i][j];
+					if(matrice1[i][j].valeurR!=matrice2[i][j].valeurR||matrice1[i][j].valeurG!=matrice2[i][j].valeurG||matrice1[i][j].valeurB!=matrice2[i][j].valeurB){
+						verif=1;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return verif;
+}
+int ppm_copier(struct RGB matrice1[MAX_HAUTEUR][MAX_LARGEUR], int lignes1, int colonnes1, struct RGB matrice2[MAX_HAUTEUR][MAX_LARGEUR], int *p_lignes2, int *p_colonnes2)
+{
+	//copie des informations
+	*p_lignes2=lignes1;
+	*p_colonnes2=colonnes1;
 	
+	//copie de la matrice
+	for (int i = 0; i < lignes1; i++)
+	{
+		for (int j = 0; j < colonnes1; j++)
+		{
+			matrice2[i][j].valeurR=matrice1[i][j].valeurR;
+			matrice2[i][j].valeurG=matrice1[i][j].valeurG;
+			matrice2[i][j].valeurB=matrice1[i][j].valeurB;
+		}
+	}
+	//Verification 
+	//if (pgm_sont_identiques(matrice1,lignes1,colonnes1,matrice2,*p_lignes2,*p_colonnes2)==OK)
+		return OK;
+	//else
+		//return ERREUR;
+	
+}
+int ppm_pivoter90(struct RGB matrice[MAX_HAUTEUR][MAX_LARGEUR], int *p_lignes, int *p_colonnes, int sens)
+{
+	return 0;
+}
 
